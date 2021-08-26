@@ -1,36 +1,47 @@
 import { validationResult } from "express-validator";
+import BlogPost from '../models/blog.js';
 
 export const createBlogPost = (req,res,next) => {
-    const title = req.body.title;
-    const image = req.body.image;
-    const body = req.body.body;
-
+    
     const errors = validationResult(req);
-
+    
     if(!errors.isEmpty()){
         const err = new Error('input invalid error');
         err.errorStatus = 400;
         err.data = errors.array();
         throw err; 
-        // console.log('err :', errors)
-        // res.status(400).json({
-        //     message: "Request Error",
-        //     data:null,
-        // })
     }
-    const result = {
-        message: "Create Blog Post Success",
-        data: {
-            post_id:1,
-            title: 'title blog',
-            image: 'imagefile.png',
-            body: 'loreml lorem lorem',
-            created_at: "12/06/21",
-            author: {
-                uid: 1,
-                name: "testing"
-            }
+    
+    if(!req.file){ 
+        const err = new Error('gambar harus diupload!!!'); 
+        err.errorStatus = 422;
+        throw err; 
+    }
+
+    const title = req.body.title;
+    const image = req.file.path; 
+    const body = req.body.body;
+
+    const Posting = new BlogPost({
+        title,
+        body,
+        image, 
+        author: {
+            uid:1,
+            name:'Dedi Irawan'
         }
-    }
-    res.status(201).json(result)
+    })
+
+    Posting.save()
+    .then(result => {
+        res.status(201).json({
+            message: 'Create Blog Post Success',
+            data: result
+        });
+    })
+    .catch(err => {
+        console.log('err: ', err);
+    });
+    
+ 
 }

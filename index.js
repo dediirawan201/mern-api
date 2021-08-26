@@ -3,6 +3,7 @@ import express from 'express';
 import productRoutes from './src/routes/products.js';
 import authRoutes from './src/routes/auth.js';
 import blogRoutes from './src/routes/blog.js';
+import mongoose from 'mongoose';
 
 const app = express();
 app.use(bodyParser.json()) //type JSON
@@ -22,5 +23,11 @@ app.use((error,req,res,next) => {
 
     res.status(status).json({message: message, data: data})
 })
-app.listen(4000)
+
+mongoose.connect('mongodb+srv://dedi:B15M1LL4h@cluster0.cii5r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+.then(() => {
+    app.listen(4000, () => console.log('Connection Success'))
+})
+.catch(err => console.log(err));
+
  

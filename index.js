@@ -5,7 +5,9 @@ import authRoutes from './src/routes/auth.js';
 import blogRoutes from './src/routes/blog.js';
 import mongoose from 'mongoose';
 import multer from 'multer';
+import path from 'path';
 
+const __dirname = path.resolve();
 const app = express();
     
 const fileStorage = multer.diskStorage({
@@ -20,16 +22,17 @@ const fileStorage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
     if(
         file.mimetype === 'image/png' ||
-        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpg' || 
         file.mimetype === 'image/jpeg' 
-    ){
-        cb(null, true);
+    ){ 
+        cb(null, true); 
     } else {
         cb(null, false);
     }
 }
 
     app.use(bodyParser.json()) //type JSON
+    app.use('/images', express.static(path.join(__dirname, 'images')))
     app.use(multer({storage:fileStorage, fileFilter:fileFilter}).single('image'));
 
     app.use((req,res,next) => {

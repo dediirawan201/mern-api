@@ -1,5 +1,5 @@
 import express from 'express';
-import { createBlogPost, getAllBlogPost } from '../controllers/blog.js';
+import { createBlogPost, getAllBlogPost, getBlogPostId } from '../controllers/blog.js';
 import { body } from 'express-validator';
   
 const router = express.Router();
@@ -10,5 +10,6 @@ router.post('/post',[
     body('body').isLength({min:5}).withMessage('input body tidak sesuai')]
     ,createBlogPost)
 
-    router.get('/posts',getAllBlogPost) 
+    router.get('/posts',getAllBlogPost);
+    router.get('/post/:postId', getBlogPostId)
 export default router;

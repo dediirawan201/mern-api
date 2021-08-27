@@ -45,3 +45,16 @@ export const createBlogPost = (req,res,next) => {
     
  
 }
+
+export const getAllBlogPost = (req,res, next) => {
+    BlogPost.find()
+    .then(result => {
+        res.status(200).json({
+            message: 'Data Blog Post Berhasil dipanggil',
+            data: result
+        })
+    })
+    .catch(err => {
+        next(err);
+    })
+}

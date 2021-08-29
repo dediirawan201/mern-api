@@ -52,12 +52,16 @@ app.use('/v1/blog', blogRoutes)
 app.use((error,req,res,next) => {
     const status = error.errorStatus || 500;
     const message = error.message;
-    const data = error.data;
+    const data = error.data; 
+
 
     res.status(status).json({message: message, data: data})
 })
 
-mongoose.connect('mongodb+srv://dedi:B15M1LL4h@cluster0.cii5r.mongodb.net/blog?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://dedi:B15M1LL4h@cluster0.cii5r.mongodb.net/blog?retryWrites=true&w=majority',{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 .then(() => {
     app.listen(4000, () => console.log('Connection Success'))
 })

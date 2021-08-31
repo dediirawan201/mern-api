@@ -1,6 +1,9 @@
 import { validationResult } from "express-validator";
 import BlogPost from '../models/blog.js';
-import path from 'path';
+import path, { parse } from 'path';
+import fs from 'fs';
+
+const __dirname = path.resolve();
 
 export const createBlogPost = (req,res,next) => {
     
@@ -48,11 +51,25 @@ export const createBlogPost = (req,res,next) => {
 }
 
 export const getAllBlogPost = (req,res, next) => {
+    const currentPage = req.query.page || 1;
+    const perPage = req.query.perPage || 5;
+    let totalItems;
+
     BlogPost.find()
+    .countDocuments()
+    .then(count => {
+        totalItems = count;
+        return BlogPost.find()
+        .skip((parseInt(currentPage) - 1) * parseInt(perPage))
+        .limit(parseInt(perPage))
+    })
     .then(result => {
         res.status(200).json({
             message: 'Data Blog Post Berhasil dipanggil',
-            data: result
+            data: result,
+            total_data: totalItems,
+            per_page: parseInt(perPage),
+            current_page: parseInt(currentPage),
         })
     })
     .catch(err => {
@@ -127,3 +144,35 @@ export const updateBlogPost = (req,res, next) => {
    
 }
 
+export const deleteBlogPost = (req,res,next) => {
+    const postId = req.params.postId; 
+
+    BlogPost.findById(postId)
+    .then(post => {
+        if(!post){
+            const error = new Error('Blog Post tidak ditemukan')
+            error.errorStatus = 404
+            throw error
+        }
+        removeImage(post.image);
+        return BlogPost.findByIdAndRemove(postId)
+    })
+        .then(result => {
+            res.status(200).json({
+                message: 'hapus blog post berhasil',
+                data:result,
+
+        })
+    })
+    .catch(err => {
+        next(err)
+    })
+}
+
+const removeImage = (filePath) => {
+    console.log('filepath', filePath)
+    console.log('__dir name', __dirname)
+
+    filePath = path.join(__dirname, '../..', filePath);
+    fs.unlink(filePath, err => console.log(err))
+}

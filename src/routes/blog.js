@@ -1,5 +1,5 @@
 import express from 'express';
-import { createBlogPost, getAllBlogPost, getBlogPostId, updateBlogPost } from '../controllers/blog.js';
+import { createBlogPost, deleteBlogPost, getAllBlogPost, getBlogPostId, updateBlogPost } from '../controllers/blog.js';
 import { body } from 'express-validator';
   
 const router = express.Router();
@@ -16,4 +16,6 @@ router.post('/post',[
         body('title').isLength({min:5}).withMessage('input title tidak sesuai'),
         body('body').isLength({min:5}).withMessage('input body tidak sesuai')]
         ,updateBlogPost)
+
+    router.delete('/post/:postId',deleteBlogPost)
 export default router;
